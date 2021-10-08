@@ -1,24 +1,54 @@
-import logo from './logo.svg';
-import './App.css';
+import { useState } from "react";
+import "./App.css";
+import { TaskItem } from "./components/TaskItem";
 
 function App() {
+
+  const [newTaskName, setNewTaskName] = useState("");
+
+  const [tasks, setTasks] = useState([]);
+
+  const handleTaskChange = (index) => () => {
+    const arr = [...tasks];
+    arr[index].isCompleted = !arr[index].isCompleted;
+    setTasks(arr);
+  };
+
+  const handleTaskCreation = (event) => {
+    event.preventDefault();
+    createNewTask(newTaskName);
+  }
+
+  const handleNewTaskNameChange = (event) => {
+    const value = event.target.value;
+    setNewTaskName(value);
+  }
+
+  const createNewTask = (name) => {
+    const arr = [...tasks];
+    arr.push({isCompleted: false, taskName: name})
+    setTasks(arr);
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <main>
+        <form onSubmit={handleTaskCreation}>
+          <h2>Create a new task:</h2>
+          <input type="text" placeholder="Task Name" value={newTaskName} onChange={handleNewTaskNameChange}></input>
+          <button>create task</button>
+        </form>
+        <ul>
+            {tasks.map((task, index) => {
+              return (
+                <TaskItem
+                  isCompleted={task.isCompleted}
+                  taskName={task.taskName}
+                  onTaskChange={handleTaskChange(index)}
+                />
+              );
+            })}
+          </ul>
+    </main>
   );
 }
 
